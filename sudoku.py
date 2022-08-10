@@ -42,11 +42,39 @@ class Sudoku_Grid():
                 print("")
 
 
+class Sudoku_Solver():
+
+    def __init__(self, grid):
+        self.grid = grid
+        self.height = self.grid.height
+        self.width = self.grid.width
+
+        # get dict of squares with corresponding values 
+        # and separate dictionary of domains
+        # with open(puzzle) as f:
+        #    contents = f.read().splitlines()
+        self.cells = {}
+        self.domains = {}
+        for cell in self.grid.squares:
+            self.cells[(cell.i, cell.j)] = cell.value
+            self.domains[(cell.i, cell.j)] = cell.domain
+
+        
+    def ac3(self):
+        print(self.cells)
+        # make cell row consistent
+        # make cell column consistent
+        # make cell block consistent
+        print(stop)
+
+
 
 def main():
     puzzle = 'puzzle1.txt'
     grid = Sudoku_Grid(puzzle)
-    grid.print()
+    solver = Sudoku_Solver(grid)
+    solver.ac3()
+    
     print('stop')
 
 
