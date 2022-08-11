@@ -114,6 +114,8 @@ class Sudoku_Solver():
                         change_made = True
                         if len(self.domains[cell]) == 0:
                             return False
+                if len(self.domains[cell]) == 1:
+                    self.cells[cell] = self.domains[cell]
         if change_made == True:
             self.ac3()
         else:
