@@ -95,8 +95,6 @@ class Sudoku_Solver():
 
         # get dict of squares with corresponding values 
         # and separate dictionary of domains
-        # with open(puzzle) as f:
-        #    contents = f.read().splitlines()
         self.cells = {}
         self.domains = {}
         for cell in self.grid.squares:
@@ -107,16 +105,19 @@ class Sudoku_Solver():
     def ac3(self):
         change_made = False
         for cell in self.cells:
-            values_to_remove = self.find_inconsistent_values(cell) 
-            for val in values_to_remove:
-                if val in self.domains[cell]:
-                    self.domains[cell].remove(val)
-                    change_made = True
+            # only check unassigned cells
+            if self.cells[cell] == '.':
+                values_to_remove = self.find_inconsistent_values(cell) 
+                for val in values_to_remove:
+                    if val in self.domains[cell]:
+                        self.domains[cell].remove(val)
+                        change_made = True
+                        if len(self.domains[cell]) == 0:
+                            return False
         if change_made == True:
             self.ac3()
         else:
-            return
-                    
+            return                
     
 
     def find_inconsistent_values(self, cell):
@@ -188,10 +189,6 @@ class Sudoku_Solver():
         set_values.remove('.')
         return set_values
         
-
-
-    def make_cell_consistent(cell, list_of_cells):
-        ...
 
 
 
