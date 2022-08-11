@@ -115,7 +115,7 @@ class Sudoku_Solver():
                         if len(self.domains[cell]) == 0:
                             return False
                 if len(self.domains[cell]) == 1:
-                    self.cells[cell] = self.domains[cell]
+                     self.cells[cell] = min(self.domains[cell])
         if change_made == True:
             self.ac3()
         else:
@@ -190,6 +190,10 @@ class Sudoku_Solver():
             set_values.add(self.cells[cell])
         set_values.remove('.')
         return set_values
+
+        def solve():
+            # select unassigned variable
+            ...
         
 
 
