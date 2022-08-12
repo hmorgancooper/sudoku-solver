@@ -26,6 +26,7 @@ def test_intermediate_puzzle():
     grid = Sudoku_Grid(puzzle)
     solver = Sudoku_Solver(grid)
     solver.ac3()
+    solver.backtrack_solve()
     solution_grid = Sudoku_Grid(solution)
     solution_solved = Sudoku_Solver(solution_grid)
     assert(solver.cells == solution_solved.cells)

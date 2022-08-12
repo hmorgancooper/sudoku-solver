@@ -123,13 +123,14 @@ class Sudoku_Solver():
     
 
     def find_inconsistent_values(self, cell):
-        # make cell consistent
         row_values = self.get_row_values(cell)
         col_values = self.get_col_values(cell)
         # make cell block consistent
         block_values = self.get_block_values(cell)
         remove_values = row_values.union(col_values)
         remove_values = remove_values.union(block_values)
+        if '.' in remove_values:
+            remove_values.remove('.')
         return remove_values
 
 
@@ -140,8 +141,9 @@ class Sudoku_Solver():
         row_num = cell[0]
         set_values = set()
         for i in range (1,10):
-            set_values.add(self.cells[row_num, i])
-        set_values.remove(".")
+            # do include current cell
+            if (row_num, i) != (cell[0], cell[1]):
+                set_values.add(self.cells[row_num, i])
         return set_values
 
 
@@ -152,8 +154,8 @@ class Sudoku_Solver():
         col_num = cell[1]
         set_values = set()
         for i in range (1,10):
-            set_values.add(self.cells[i, col_num])
-        set_values.remove(".")
+            if (i, col_num) != (cell[0], cell[1]):
+                set_values.add(self.cells[i, col_num])
         return set_values
 
 
@@ -186,14 +188,54 @@ class Sudoku_Solver():
             block = self.grid.block9
 
         set_values = set()
-        for cell in block:
-            set_values.add(self.cells[cell])
-        set_values.remove('.')
+        for block_cell in block:
+            if block_cell != cell:
+                set_values.add(self.cells[block_cell])
         return set_values
 
-        def solve():
-            # select unassigned variable
-            ...
+        
+    def backtrack_solve(self):
+        if self.puzzle_complete():
+            return
+        cells = self.get_cell_list()
+        cell = cells.pop()
+        for val in self.domains[cell]:
+            domain = self.domains[cell]
+            self.cells[cell] = val
+            if self.is_consistent():
+                self.backtrack_solve()
+            if self.puzzle_complete() and self.is_consistent():
+                return
+            # delete last value
+            self.cells[cell] = '.'
+        
+        
+        
+    def puzzle_complete(self):
+        if '.' not in self.cells.values():
+            return True
+        else:
+            return False
+    
+    def get_cell_list(self):
+        vars = []
+        for var in self.cells.keys():
+            if self.cells[var] == '.':
+                vars.append(var)
+        return vars
+    
+    def is_consistent(self):
+        for cell in self.cells:
+            if self.cells[cell] != '.':
+                val = self.cells[cell]
+                inconsistent_vals = self.find_inconsistent_values(cell)
+                if self.cells[cell] in inconsistent_vals: # need to remove cell position from find row, col, bloack
+                    return False
+        return True
+
+    def print():
+        ...
+
         
 
 
@@ -202,10 +244,11 @@ class Sudoku_Solver():
 
 
 def main():
-    puzzle = 'puzzle1.txt'
+    puzzle = 'puzzle3.txt'
     grid = Sudoku_Grid(puzzle)
     solver = Sudoku_Solver(grid)
     solver.ac3()
+    solver.backtrack_solve()
     
     print('stop')
 
