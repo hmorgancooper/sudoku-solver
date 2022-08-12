@@ -222,6 +222,7 @@ class Sudoku_Solver():
         for var in self.cells.keys():
             if self.cells[var] == '.':
                 vars.append(var)
+        vars.sort(key = lambda var: len(self.domains[var]), reverse = True)
         return vars
     
     def is_consistent(self):
