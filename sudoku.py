@@ -199,17 +199,16 @@ class Sudoku_Solver():
             return
         cells = self.get_cell_list()
         cell = cells.pop()
+        #for val in self.order_domain_values(cell):
         for val in self.domains[cell]:
-            domain = self.domains[cell]
             self.cells[cell] = val
-            if self.is_consistent():
+            if self.is_cell_consistent(cell):
                 self.backtrack_solve()
             if self.puzzle_complete() and self.is_consistent():
                 return
             # delete last value
             self.cells[cell] = '.'
-        
-        
+          
         
     def puzzle_complete(self):
         if '.' not in self.cells.values():
@@ -230,22 +229,23 @@ class Sudoku_Solver():
             if self.cells[cell] != '.':
                 val = self.cells[cell]
                 inconsistent_vals = self.find_inconsistent_values(cell)
-                if self.cells[cell] in inconsistent_vals: # need to remove cell position from find row, col, bloack
+                if self.cells[cell] in inconsistent_vals: 
                     return False
         return True
 
+    
+    def is_cell_consistent(self, cell):
+        inconsistent_vals = self.find_inconsistent_values(cell)
+        if self.cells[cell] in inconsistent_vals: 
+            return False
+        return True
+    
     def print():
         ...
 
         
-
-
-
-
-
-
 def main():
-    puzzle = 'puzzle3.txt'
+    puzzle = 'puzzle6.txt'
     grid = Sudoku_Grid(puzzle)
     solver = Sudoku_Solver(grid)
     solver.ac3()

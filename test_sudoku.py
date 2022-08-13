@@ -31,11 +31,7 @@ def test_intermediate_puzzle():
     solution_solved = Sudoku_Solver(solution_grid)
     assert(solver.cells == solution_solved.cells)
 
-
 def test_hard_puzzle():
-    """
-    Req subset cover idea
-    """
     puzzle = 'puzzle4.txt'
     solution = 'solutions/solution4.txt'
     grid = Sudoku_Grid(puzzle)
@@ -45,3 +41,17 @@ def test_hard_puzzle():
     solution_grid = Sudoku_Grid(solution)
     solution_solved = Sudoku_Solver(solution_grid)
     assert(solver.cells == solution_solved.cells)
+
+def test_super_hard_puzzle():
+    puzzle = 'puzzle5.txt'
+    solution = 'solutions/solution5.txt'
+    grid = Sudoku_Grid(puzzle)
+    solver = Sudoku_Solver(grid)
+    solver.ac3()
+    solver.backtrack_solve()
+    solution_grid = Sudoku_Grid(solution)
+    solution_solved = Sudoku_Solver(solution_grid)
+    assert(solver.cells == solution_solved.cells)
+
+
+ 
