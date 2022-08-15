@@ -130,24 +130,6 @@ class Sudoku_Solver():
         remove_values = row_values.union(col_values)
         remove_values = remove_values.union(block_values)
         return remove_values
-    
-
-    # def find_inconsistent_values(self, cell):
-    #     row_values = self.get_row_values(cell)
-    #     if self.cells[cell] in row_values:
-    #         return False
-    #     col_values = self.get_col_values(cell)
-    #     if self.cells[cell] in col_values:
-    #         return False
-    #     # make cell block consistent
-    #     block_values = self.get_block_values(cell)
-    #     if self.cells[cell] in block_values:
-    #         return False
-    #     else:
-    #         return True
-    #     remove_values = row_values.union(col_values)
-    #     remove_values = remove_values.union(block_values)
-    #     return remove_values
 
 
     # def get_row_values(self, cell):
@@ -293,16 +275,19 @@ class Sudoku_Solver():
 
     
     def is_cell_consistent(self, cell):
-        inconsistent_vals = self.find_inconsistent_values(cell)
-        if self.cells[cell] in inconsistent_vals: 
+        row_values = self.get_row_values(cell)
+        if self.cells[cell] in row_values:
             return False
-        return True
+        col_values = self.get_col_values(cell)
+        if self.cells[cell] in col_values:
+            return False
+        # make cell block consistent
+        block_values = self.get_block_values(cell)
+        if self.cells[cell] in block_values:
+            return False
+        else:
+            return True
     
-    # def is_cell_consistent(self, cell):
-    #     inconsistent_vals = self.find_inconsistent_values(cell)
-    #     if inconsistent_vals == False: 
-    #         return False
-    #     return True
     
     def print():
         ...
