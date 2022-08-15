@@ -211,20 +211,27 @@ class Sudoku_Solver():
             set_values.add(self.cells[block_cell])
         return set_values
 
-        
-    def backtrack_solve(self):
-        if self.puzzle_complete():
+        # next: feed in list of empty cells to backtrack and add to/ remove from this
+        # instead of recalcing each time ( make puzzle_complete and get_cell_list more efficient)
+        # when len(cells_to_complete) == 0 puzzle is solved. Sort only empty cell list instead of cycling 
+        # through all cells
+    def backtrack_solve(self, empty_cells=None):
+        if empty_cells == None:
+            empty_cells = self.get_cell_list()
+        if self.puzzle_complete(empty_cells):
             return
-        cells = self.get_cell_list()
-        cell = cells.pop()
+        # sort cell list
+        #empty_cells.sort(key = lambda var: len(self.domains[var]), reverse = True)
+        cell = empty_cells.pop()
         for val in self.domains[cell]:
             self.cells[cell] = val
             if self.is_cell_consistent(cell):
-                self.backtrack_solve()
-            if self.puzzle_complete() and self.is_consistent():
+                self.backtrack_solve(empty_cells)
+            if self.puzzle_complete(empty_cells) and self.is_consistent():
                 return
             # delete last value
             self.cells[cell] = '.'
+        empty_cells.append(cell)
           
     def add_if_candidate_unique(self, cell):
         for val in self.domains[cell]:
@@ -250,8 +257,8 @@ class Sudoku_Solver():
          
          
 
-    def puzzle_complete(self):
-        if '.' not in self.cells.values():
+    def puzzle_complete(self, empty_cells):
+        if len(empty_cells) == 0:
             return True
         else:
             return False
@@ -266,11 +273,8 @@ class Sudoku_Solver():
     
     def is_consistent(self):
         for cell in self.cells:
-            if self.cells[cell] != '.':
-                val = self.cells[cell]
-                inconsistent_vals = self.find_inconsistent_values(cell)
-                if self.cells[cell] in inconsistent_vals: 
-                    return False
+            if self.is_cell_consistent(cell) == False:
+                return False
         return True
 
     
