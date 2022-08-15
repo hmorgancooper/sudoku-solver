@@ -1,6 +1,4 @@
-"""
-File containing classes Sudoku_Grid and Square
-"""
+import time 
 
 class Square():
     def __init__(self, i, j, value=None):
@@ -107,6 +105,7 @@ class Sudoku_Solver():
         for cell in self.cells:
             # only check unassigned cells
             if self.cells[cell] == '.':
+                #self.add_if_candidate_unique(cell)
                 values_to_remove = self.find_inconsistent_values(cell) 
                 for val in values_to_remove:
                     if val in self.domains[cell]:
@@ -119,7 +118,8 @@ class Sudoku_Solver():
         if change_made == True:
             self.ac3()
         else:
-            return                
+            return 
+               
     
 
     def find_inconsistent_values(self, cell):
@@ -134,29 +134,48 @@ class Sudoku_Solver():
         return remove_values
 
 
+    # def get_row_values(self, cell):
+    #     """
+    #     return set of cell values within the cell's row
+    #     """
+    #     row_num = cell[0]
+    #     set_values = set()
+    #     for i in range (1,10):
+    #         # don't include current cell
+    #         if (row_num, i) != (cell[0], cell[1]):
+    #             set_values.add(self.cells[row_num, i])
+    #     return set_values
+    
     def get_row_values(self, cell):
-        """
-        return set of cell values within the cell's row
-        """
-        row_num = cell[0]
+        row_values = {(cell[0], 1), (cell[0], 2), (cell[0], 3), (cell[0], 4), (cell[0], 5), (cell[0], 6),
+                      (cell[0], 7), (cell[0], 8), (cell[0], 9)}
+        row_values.remove((cell[0], cell[1]))
         set_values = set()
-        for i in range (1,10):
-            # do include current cell
-            if (row_num, i) != (cell[0], cell[1]):
-                set_values.add(self.cells[row_num, i])
+        for cell in row_values:
+            set_values.add(self.cells[cell])
         return set_values
 
 
+    # def get_col_values(self, cell):
+    #     """
+    #     return set of cells within the cell's column
+    #     """
+    #     col_num = cell[1]
+    #     set_values = set()
+    #     for i in range (1,10):
+    #         if (i, col_num) != (cell[0], cell[1]):
+    #             set_values.add(self.cells[i, col_num])
+    #     return set_values
+    
     def get_col_values(self, cell):
-        """
-        return set of cells within the cell's column
-        """
-        col_num = cell[1]
+        col_values = {(1, cell[1]), (2, cell[1]), (3, cell[1]), (4, cell[1]), (5, cell[1]), (6, cell[1]),
+                      (7, cell[1]), (8, cell[1]), (9, cell[1])}
+        col_values.remove((cell[0], cell[1]))
         set_values = set()
-        for i in range (1,10):
-            if (i, col_num) != (cell[0], cell[1]):
-                set_values.add(self.cells[i, col_num])
+        for cell in col_values:
+            set_values.add(self.cells[cell])
         return set_values
+
 
 
     def get_block_values(self, cell):
@@ -188,9 +207,10 @@ class Sudoku_Solver():
             block = self.grid.block9
 
         set_values = set()
-        for block_cell in block:
-            if block_cell != cell:
-                set_values.add(self.cells[block_cell])
+        block_temp = block.copy()
+        block_temp.remove(cell)
+        for block_cell in block_temp:
+            set_values.add(self.cells[block_cell])
         return set_values
 
         
@@ -199,7 +219,6 @@ class Sudoku_Solver():
             return
         cells = self.get_cell_list()
         cell = cells.pop()
-        #for val in self.order_domain_values(cell):
         for val in self.domains[cell]:
             self.cells[cell] = val
             if self.is_cell_consistent(cell):
@@ -209,7 +228,30 @@ class Sudoku_Solver():
             # delete last value
             self.cells[cell] = '.'
           
-        
+    def add_if_candidate_unique(self, cell):
+        for val in self.domains[cell]:
+               # get row domains: return if val not in domain
+            row_num = cell[0]
+            col_num = cell[1]
+            row_domain_values = set()
+            col_domain_values = set()
+            for i in range (1,10):
+                if (row_num, i) != (cell[0], cell[1]):
+                    row_domain_values = row_domain_values.union(self.domains[row_num, i])
+                    col_domain_values = col_domain_values.union(self.domains[i, col_num])
+            if val not in row_domain_values:
+                print('Not in domain!')
+            if val not in col_domain_values:
+                print('Not in domain!')
+            
+
+         # get col domains
+         # get block domains
+        return 
+         
+         
+         
+
     def puzzle_complete(self):
         if '.' not in self.cells.values():
             return True
@@ -245,12 +287,18 @@ class Sudoku_Solver():
 
         
 def main():
-    puzzle = 'puzzle6.txt'
+    puzzle = 'puzzle4.txt'
     grid = Sudoku_Grid(puzzle)
     solver = Sudoku_Solver(grid)
+    tic = time.perf_counter()
     solver.ac3()
+    toc = time.perf_counter()
     solver.backtrack_solve()
+    bong = time.perf_counter()
     
+    #print(f"ac3 time is {tic - toc}")
+    print(f"solver time is {bong - toc}")
+    print(f'total time is {bong - tic}')
     print('stop')
 
 
