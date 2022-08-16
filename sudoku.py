@@ -1,3 +1,4 @@
+import sys
 import time 
 
 class Square():
@@ -45,7 +46,6 @@ class Sudoku_Grid():
     for i in range(7, 10):
         for j in range(4,7):
             block6.add((i,j))
-    
 
     block7 = set()
     for i in range(1,4):
@@ -59,6 +59,7 @@ class Sudoku_Grid():
     for i in range(7, 10):
         for j in range(7,10):
             block9.add((i,j))
+    
 
     def __init__(self, puzzle):
         self.height = 9
@@ -73,9 +74,7 @@ class Sudoku_Grid():
                 if contents[i][j] != ".":
                     self.squares.append(Square(i+1, j+1, int(contents[i][j]))) 
                 else:
-                    self.squares.append(Square(i+1, j+1, contents[i][j]))
-
-        
+                    self.squares.append(Square(i+1, j+1, contents[i][j]))     
     
     def print(self):
         for item in self.squares:
@@ -119,6 +118,7 @@ class Sudoku_Solver():
             self.ac3()
         else:
             return 
+    
                
     
 
@@ -131,18 +131,6 @@ class Sudoku_Solver():
         remove_values = remove_values.union(block_values)
         return remove_values
 
-
-    # def get_row_values(self, cell):
-    #     """
-    #     return set of cell values within the cell's row
-    #     """
-    #     row_num = cell[0]
-    #     set_values = set()
-    #     for i in range (1,10):
-    #         # don't include current cell
-    #         if (row_num, i) != (cell[0], cell[1]):
-    #             set_values.add(self.cells[row_num, i])
-    #     return set_values
     
     def get_row_values(self, cell):
         row_values = {(cell[0], 1), (cell[0], 2), (cell[0], 3), (cell[0], 4), (cell[0], 5), (cell[0], 6),
@@ -153,17 +141,6 @@ class Sudoku_Solver():
             set_values.add(self.cells[cell])
         return set_values
 
-
-    # def get_col_values(self, cell):
-    #     """
-    #     return set of cells within the cell's column
-    #     """
-    #     col_num = cell[1]
-    #     set_values = set()
-    #     for i in range (1,10):
-    #         if (i, col_num) != (cell[0], cell[1]):
-    #             set_values.add(self.cells[i, col_num])
-    #     return set_values
     
     def get_col_values(self, cell):
         col_values = {(1, cell[1]), (2, cell[1]), (3, cell[1]), (4, cell[1]), (5, cell[1]), (6, cell[1]),
@@ -211,17 +188,12 @@ class Sudoku_Solver():
             set_values.add(self.cells[block_cell])
         return set_values
 
-        # next: feed in list of empty cells to backtrack and add to/ remove from this
-        # instead of recalcing each time ( make puzzle_complete and get_cell_list more efficient)
-        # when len(cells_to_complete) == 0 puzzle is solved. Sort only empty cell list instead of cycling 
-        # through all cells
+
     def backtrack_solve(self, empty_cells=None):
         if empty_cells == None:
             empty_cells = self.get_cell_list()
         if self.puzzle_complete(empty_cells):
             return
-        # sort cell list
-        #empty_cells.sort(key = lambda var: len(self.domains[var]), reverse = True)
         cell = empty_cells.pop()
         for val in self.domains[cell]:
             self.cells[cell] = val
@@ -232,29 +204,6 @@ class Sudoku_Solver():
             # delete last value
             self.cells[cell] = '.'
         empty_cells.append(cell)
-          
-    def add_if_candidate_unique(self, cell):
-        for val in self.domains[cell]:
-               # get row domains: return if val not in domain
-            row_num = cell[0]
-            col_num = cell[1]
-            row_domain_values = set()
-            col_domain_values = set()
-            for i in range (1,10):
-                if (row_num, i) != (cell[0], cell[1]):
-                    row_domain_values = row_domain_values.union(self.domains[row_num, i])
-                    col_domain_values = col_domain_values.union(self.domains[i, col_num])
-            if val not in row_domain_values:
-                print('Not in domain!')
-            if val not in col_domain_values:
-                print('Not in domain!')
-            
-
-         # get col domains
-         # get block domains
-        return 
-         
-         
          
 
     def puzzle_complete(self, empty_cells):
@@ -298,7 +247,10 @@ class Sudoku_Solver():
 
         
 def main():
-    puzzle = 'puzzle4.txt'
+    if len(sys.argv) != 2:
+        sys.exit("Command line input must be in form: python3 sudoku.py [puzzle_file.txt]")
+
+    puzzle = sys.argv[1]
     grid = Sudoku_Grid(puzzle)
     solver = Sudoku_Solver(grid)
     tic = time.perf_counter()
