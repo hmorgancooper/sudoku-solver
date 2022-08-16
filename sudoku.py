@@ -89,9 +89,6 @@ class Sudoku_Solver():
         self.grid = grid
         self.height = self.grid.height
         self.width = self.grid.width
-
-        # get dict of squares with corresponding values 
-        # and separate dictionary of domains
         self.cells = {}
         self.domains = {}
         for cell in self.grid.squares:
@@ -100,11 +97,10 @@ class Sudoku_Solver():
 
         
     def ac3(self):
-        change_made = False
+        change_made = False 
         for cell in self.cells:
             # only check unassigned cells
             if self.cells[cell] == '.':
-                #self.add_if_candidate_unique(cell)
                 values_to_remove = self.find_inconsistent_values(cell) 
                 for val in values_to_remove:
                     if val in self.domains[cell]:
@@ -118,9 +114,7 @@ class Sudoku_Solver():
             self.ac3()
         else:
             return 
-    
-               
-    
+      
 
     def find_inconsistent_values(self, cell):
         row_values = self.get_row_values(cell)
@@ -242,8 +236,18 @@ class Sudoku_Solver():
             return True
     
     
-    def print():
-        ...
+    def print(self):
+        print("\nFinished board!\n")
+        for cell in self.cells.keys():
+            print(self.cells[cell], end=" ")
+            if cell[1] == 3 or cell[1] == 6:
+                print("|", end="")
+            if cell[1]/9 == 1:
+                print("")
+            if (cell[0] in [3,6]) and cell[1] == 9:
+                print("\n", end = "")
+        return None
+        
 
         
 def main():
@@ -253,16 +257,13 @@ def main():
     puzzle = sys.argv[1]
     grid = Sudoku_Grid(puzzle)
     solver = Sudoku_Solver(grid)
-    tic = time.perf_counter()
     solver.ac3()
-    toc = time.perf_counter()
+    print("Solving...")
     solver.backtrack_solve()
-    bong = time.perf_counter()
+    solver.print()
+
     
-    #print(f"ac3 time is {tic - toc}")
-    print(f"solver time is {bong - toc}")
-    print(f'total time is {bong - tic}')
-    print('stop')
+
 
 
 
