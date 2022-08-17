@@ -1,87 +1,5 @@
+from sudoku_board import *
 import sys
-import time 
-
-class Square():
-    def __init__(self, i, j, value=None):
-        self.i = i
-        self.j = j
-        self.value = value
-        self.domain = set(range(1,10))
-    
-
-    def __str__(self):
-        return f"({self.i}, {self.j}), {self.value}"
-    
-
-    def __eq__(self):
-        return (
-            (self.i == other.i) and
-            (self.j == other.j))
-
-
-class Sudoku_Grid():
-    # get list of cell coordinates for each of the 3x3 blocks
-    block1 = set()
-    for i in range(1,4):
-        for j in range(1,4):
-            block1.add((i,j))
-    block2 = set()
-    for i in range(4, 7):
-        for j in range(1,4):
-            block2.add((i,j))
-    block3 = set()
-    for i in range(7, 10):
-        for j in range(1,4):
-            block3.add((i,j))
-    
-    block4 = set()
-    for i in range(1,4):
-        for j in range(4,7):
-            block4.add((i,j))
-    block5 = set()
-    for i in range(4, 7):
-        for j in range(4,7):
-            block5.add((i,j))
-    block6 = set()
-    for i in range(7, 10):
-        for j in range(4,7):
-            block6.add((i,j))
-
-    block7 = set()
-    for i in range(1,4):
-        for j in range(7,10):
-            block7.add((i,j))
-    block8 = set()
-    for i in range(4, 7):
-        for j in range(7,10):
-            block8.add((i,j))
-    block9 = set()
-    for i in range(7, 10):
-        for j in range(7,10):
-            block9.add((i,j))
-    
-
-    def __init__(self, puzzle):
-        self.height = 9
-        self.width = 9
-
-        with open(puzzle) as f:
-            contents = f.read().splitlines()
-        
-        self.squares = list()
-        for i in range(self.height):
-            for j in range(self.width):
-                if contents[i][j] != ".":
-                    self.squares.append(Square(i+1, j+1, int(contents[i][j]))) 
-                else:
-                    self.squares.append(Square(i+1, j+1, contents[i][j]))     
-    
-    def print(self):
-        for item in self.squares:
-            print(item.value, end=" ")
-            if item.j == 9:
-                print("")
-
 
 class Sudoku_Solver():
 
@@ -96,7 +14,13 @@ class Sudoku_Solver():
             self.domains[(cell.i, cell.j)] = cell.domain
 
         
-    def ac3(self):
+    def fill_in_with_logic(self):
+        """
+        Recursively fills in board using constraints that no number can be repeated
+        in each row, column or block. Values already in row, col and block are removed
+        from each cells domain. When there is only one value left in the domain, it is 
+        added to the cell.
+        """
         change_made = False 
         for cell in self.cells:
             # only check unassigned cells
@@ -107,16 +31,20 @@ class Sudoku_Solver():
                         self.domains[cell].remove(val)
                         change_made = True
                         if len(self.domains[cell]) == 0:
+                            sys.exit("Domain empty, impossible puzzle!")
                             return False
                 if len(self.domains[cell]) == 1:
                      self.cells[cell] = min(self.domains[cell])
         if change_made == True:
-            self.ac3()
+            self.fill_in_with_logic()
         else:
             return 
       
 
     def find_inconsistent_values(self, cell):
+        """
+        Finds values that must be removed from the domain of the cell
+        """
         row_values = self.get_row_values(cell)
         col_values = self.get_col_values(cell)
         # make cell block consistent
@@ -146,11 +74,7 @@ class Sudoku_Solver():
         return set_values
 
 
-
     def get_block_values(self, cell):
-        """
-        return set of cells within the cell's block
-        """
         i = cell[0]
         j = cell[1]
 
@@ -184,6 +108,9 @@ class Sudoku_Solver():
 
 
     def backtrack_solve(self, empty_cells=None):
+        """
+        Fills in board using backtrack search
+        """
         if empty_cells == None:
             empty_cells = self.get_cell_list()
         if self.puzzle_complete(empty_cells):
@@ -207,6 +134,9 @@ class Sudoku_Solver():
             return False
     
     def get_cell_list(self):
+        """
+        Gets list of empty cells and sorts them in order of domain size (smallest domain -> chosen first)
+        """
         vars = []
         for var in self.cells.keys():
             if self.cells[var] == '.':
@@ -215,6 +145,9 @@ class Sudoku_Solver():
         return vars
     
     def is_consistent(self):
+        """
+        Checks if board is consistent (breaks no constraints)
+        """
         for cell in self.cells:
             if self.is_cell_consistent(cell) == False:
                 return False
@@ -222,6 +155,9 @@ class Sudoku_Solver():
 
     
     def is_cell_consistent(self, cell):
+        """
+        Checks if cell is consistent
+        """
         row_values = self.get_row_values(cell)
         if self.cells[cell] in row_values:
             return False
@@ -237,34 +173,31 @@ class Sudoku_Solver():
     
     
     def print(self):
-        print("\nFinished board!\n")
         for cell in self.cells.keys():
             print(self.cells[cell], end=" ")
             if cell[1] == 3 or cell[1] == 6:
-                print("|", end="")
+                print(" ", end="")
             if cell[1]/9 == 1:
                 print("")
             if (cell[0] in [3,6]) and cell[1] == 9:
                 print("\n", end = "")
-        return None
-        
+        return None      
 
         
 def main():
     if len(sys.argv) != 2:
         sys.exit("Command line input must be in form: python3 sudoku.py [puzzle_file.txt]")
 
-    puzzle = sys.argv[1]
-    grid = Sudoku_Grid(puzzle)
-    solver = Sudoku_Solver(grid)
-    solver.ac3()
-    print("Solving...")
-    solver.backtrack_solve()
+    puzzle = "puzzles/" + sys.argv[1]
+    board = Sudoku_Board(puzzle)
+    solver = Sudoku_Solver(board)
+    print("Initial board:\n")
     solver.print()
-
-    
-
-
+    solver.fill_in_with_logic()
+    print("\nSolving...")
+    solver.backtrack_solve()
+    print("\nFinished board!\n")
+    solver.print()
 
 
 if __name__ == "__main__":

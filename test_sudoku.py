@@ -5,53 +5,43 @@ from sudoku import *
 # test easy puzzle
 def test_easy_puzzle():
     '''
-    This test requires only ac3 to solve, not backtrack
+    This test requires only filling with logic to solve, not backtrack
     '''
-    puzzle = 'puzzle2.txt'
-    solution = 'solutions/solution2.txt'
-    grid = Sudoku_Grid(puzzle)
+    puzzle = 'puzzles/puzzle1.txt'
+    solution = 'solutions/solution1.txt'
+    grid = Sudoku_Board(puzzle)
     solver = Sudoku_Solver(grid)
-    solver.ac3()
-    solution_grid = Sudoku_Grid(solution)
+    solver.fill_in_with_logic()
+    solution_grid = Sudoku_Board(solution)
     solution_solved = Sudoku_Solver(solution_grid)
     assert(solver.cells == solution_solved.cells)
 
 
 def test_intermediate_puzzle():
     """
-    Req subset cover idea
+    Puzzle requires logic and backtrack
     """
-    puzzle = 'puzzle3.txt'
-    solution = 'solutions/solution3.txt'
-    grid = Sudoku_Grid(puzzle)
+    puzzle = 'puzzles/puzzle2.txt'
+    solution = 'solutions/solution2.txt'
+    grid = Sudoku_Board(puzzle)
     solver = Sudoku_Solver(grid)
-    solver.ac3()
+    solver.fill_in_with_logic()
     solver.backtrack_solve()
-    solution_grid = Sudoku_Grid(solution)
+    solution_grid = Sudoku_Board(solution)
     solution_solved = Sudoku_Solver(solution_grid)
     assert(solver.cells == solution_solved.cells)
 
 def test_hard_puzzle():
-    puzzle = 'puzzle4.txt'
-    solution = 'solutions/solution4.txt'
-    grid = Sudoku_Grid(puzzle)
+    puzzle = 'puzzles/puzzle3.txt'
+    solution = 'solutions/solution3.txt'
+    grid = Sudoku_Board(puzzle)
     solver = Sudoku_Solver(grid)
-    solver.ac3()
+    solver.fill_in_with_logic()
     solver.backtrack_solve()
-    solution_grid = Sudoku_Grid(solution)
+    solution_grid = Sudoku_Board(solution)
     solution_solved = Sudoku_Solver(solution_grid)
     assert(solver.cells == solution_solved.cells)
 
-def test_super_hard_puzzle():
-    puzzle = 'puzzle5.txt'
-    solution = 'solutions/solution5.txt'
-    grid = Sudoku_Grid(puzzle)
-    solver = Sudoku_Solver(grid)
-    solver.ac3()
-    solver.backtrack_solve()
-    solution_grid = Sudoku_Grid(solution)
-    solution_solved = Sudoku_Solver(solution_grid)
-    assert(solver.cells == solution_solved.cells)
 
 
  
