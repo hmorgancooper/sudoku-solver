@@ -125,8 +125,8 @@ class Sudoku_Solver():
             # delete last value
             self.cells[cell] = '.'
         empty_cells.append(cell)
-         
 
+        
     def puzzle_complete(self, empty_cells):
         if len(empty_cells) == 0:
             return True
