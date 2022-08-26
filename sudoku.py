@@ -183,7 +183,15 @@ class Sudoku_Solver():
                 print("\n", end = "")
         return None      
 
-        
+
+    def solve(self, solver):
+        solver.fill_in_with_logic()
+        print("\nSolving...")
+        solver.backtrack_solve()
+        print("\nFinished board!\n")
+        solver.print()
+
+
 def main():
     if len(sys.argv) != 2:
         sys.exit("Command line input must be in form: python3 sudoku.py [puzzle_file.txt]")
@@ -193,11 +201,8 @@ def main():
     solver = Sudoku_Solver(board)
     print("Initial board:\n")
     solver.print()
-    solver.fill_in_with_logic()
-    print("\nSolving...")
-    solver.backtrack_solve()
-    print("\nFinished board!\n")
-    solver.print()
+    solver.solve(solver)
+    
 
 
 if __name__ == "__main__":
